@@ -10,6 +10,10 @@ import (
 )
 
 func main() {
+	templCSSSort()
+}
+
+func templCSSSort() {
 	// find all .templ files in directory and subdirectories
 	files, err := filepath.Glob("./templates/*.templ")
 	if err != nil {
