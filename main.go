@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -9,8 +10,18 @@ import (
 	"strings"
 )
 
+type Flags struct {
+	dev bool
+}
+
 func main() {
-	templCSSSort()
+	// flag "--dev" to run the script in dev mode
+	dev := flag.Bool("dev", false, "Run the script in dev mode")
+	flag.Parse()
+
+	templCSSSort(Flags{
+		dev: *dev,
+	})
 }
 
 func assert(condition bool, msg string) {
@@ -19,7 +30,7 @@ func assert(condition bool, msg string) {
 	}
 }
 
-func templCSSSort() {
+func templCSSSort(flags Flags) {
 	// find all .templ files in directory and subdirectories
 	files, err := filepath.Glob("./templates/*.templ")
 	if err != nil {
@@ -71,7 +82,9 @@ func templCSSSort() {
 			assert(newClassList != "", "New class list is empty")
 
 			// log diff
-			logDiff(file, classList, newClassList)
+			if flags.dev {
+				logDiff(file, classList, newClassList)
+			}
 
 			// replace class list in file
 			originalContent = strings.Replace(originalContent, match[0], "class=\""+newClassList+"\"", -1)

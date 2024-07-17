@@ -184,5 +184,7 @@ func TestSetupTemplFile2(t *testing.T) {
 }
 
 func TestMain(t *testing.T) {
-	templCSSSort()
+	templCSSSort(Flags{
+		dev: true,
+	})
 }
