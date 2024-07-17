@@ -40,3 +40,7 @@ func TestSetupTemplFile(t *testing.T) {
 		t.Fatalf("Failed to write to test.templ file: %v", err)
 	}
 }
+
+func TestMain(t *testing.T) {
+	main()
+}

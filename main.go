@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
 func main() {
@@ -15,6 +16,19 @@ func main() {
 
 	// parse each file
 	for _, file := range files {
-		os.ReadFile(file)
+		// read file
+		content, err := os.ReadFile(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// find all classes in templ file
+		re := regexp.MustCompile(`class="([^"]+)"`)
+		matches := re.FindAllStringSubmatch(string(content), -1)
+
+		for _, match := range matches {
+			classList := match[1]
+			log.Println("File:", file, "ClassList:", classList)
+		}
 	}
 }
