@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestSetupTemplFile(t *testing.T) {
@@ -184,7 +186,10 @@ func TestSetupTemplFile2(t *testing.T) {
 }
 
 func TestTemplCSSSort(t *testing.T) {
+	start := time.Now()
 	templCSSSort(Flags{
 		dev: true,
 	})
+	end := time.Now()
+	fmt.Println("Time taken:", end.Sub(start))
 }
