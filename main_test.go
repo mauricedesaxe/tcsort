@@ -183,7 +183,7 @@ func TestSetupTemplFile2(t *testing.T) {
 	}
 }
 
-func TestMain(t *testing.T) {
+func TestTemplCSSSort(t *testing.T) {
 	templCSSSort(Flags{
 		dev: true,
 	})
