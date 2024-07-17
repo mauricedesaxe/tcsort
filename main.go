@@ -13,6 +13,12 @@ func main() {
 	templCSSSort()
 }
 
+func assert(condition bool, msg string) {
+	if !condition {
+		log.Fatal(msg)
+	}
+}
+
 func templCSSSort() {
 	// find all .templ files in directory and subdirectories
 	files, err := filepath.Glob("./templates/*.templ")
@@ -29,24 +35,30 @@ func templCSSSort() {
 		}
 
 		originalContent := string(content)
+		assert(originalContent != "", "File is empty")
 
 		// find all classes in templ file
 		re := regexp.MustCompile(`class="([^"]+)"`)
 		matches := re.FindAllStringSubmatch(originalContent, -1)
+		assert(len(matches) > 0, "No classes found")
 
 		for _, match := range matches {
 			classList := match[1]
+			assert(classList != "", "Class list is empty")
 
 			// trim in place
 			classList = strings.TrimSpace(classList)
+			assert(classList != "", "Class list is empty")
 
 			// any whitespace bigger then 1 char, reduce to 1 char
 			for strings.Contains(classList, "  ") {
 				classList = strings.ReplaceAll(classList, "  ", " ")
 			}
+			assert(classList != "", "Class list is empty")
 
 			// split
 			classes := strings.Split(classList, " ")
+			assert(len(classes) > 0, "No classes found")
 
 			// sort
 			sort.Strings(classes)
@@ -56,12 +68,14 @@ func templCSSSort() {
 
 			// create new class list string
 			newClassList := strings.Join(classes, " ")
+			assert(newClassList != "", "New class list is empty")
 
 			// log diff
 			logDiff(file, classList, newClassList)
 
 			// replace class list in file
 			originalContent = strings.Replace(originalContent, match[0], "class=\""+newClassList+"\"", -1)
+			assert(originalContent != "", "New content is empty")
 		}
 
 		// write the modified content back to the file
@@ -81,6 +95,7 @@ func removeDuplicates(slice []string) []string {
 			list = append(list, entry)
 		}
 	}
+	assert(len(list) > 0, "No classes found")
 	return list
 }
 
