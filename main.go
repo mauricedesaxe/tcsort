@@ -24,9 +24,11 @@ func main() {
 			log.Fatal(err)
 		}
 
+		originalContent := string(content)
+
 		// find all classes in templ file
 		re := regexp.MustCompile(`class="([^"]+)"`)
-		matches := re.FindAllStringSubmatch(string(content), -1)
+		matches := re.FindAllStringSubmatch(originalContent, -1)
 
 		for _, match := range matches {
 			classList := match[1]
@@ -53,6 +55,15 @@ func main() {
 
 			// log diff
 			logDiff(file, classList, newClassList)
+
+			// replace class list in file
+			originalContent = strings.Replace(originalContent, match[0], "class=\""+newClassList+"\"", -1)
+		}
+
+		// write the modified content back to the file
+		err = os.WriteFile(file, []byte(originalContent), 0644)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 }
