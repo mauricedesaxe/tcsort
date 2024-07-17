@@ -135,6 +135,7 @@ func logDiff(file, oldClassList, newClassList string) {
 		reset = "\033[0m"
 	)
 
+	log.Println("===")
 	log.Println("File:", file)
 	log.Println("Old:", red, oldClassList, reset)
 	log.Println("New:", green, newClassList, reset)
