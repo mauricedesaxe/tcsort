@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 func main() {
@@ -28,6 +29,15 @@ func main() {
 
 		for _, match := range matches {
 			classList := match[1]
+
+			// trim in place
+			classList = strings.TrimSpace(classList)
+
+			// any whitespace bigger then 1 char, reduce to 1 char
+			for strings.Contains(classList, "  ") {
+				classList = strings.ReplaceAll(classList, "  ", " ")
+			}
+
 			log.Println("File:", file, "ClassList:", classList)
 		}
 	}
