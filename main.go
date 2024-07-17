@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -38,7 +39,12 @@ func main() {
 				classList = strings.ReplaceAll(classList, "  ", " ")
 			}
 
-			log.Println("File:", file, "ClassList:", classList)
+			// split
+			classes := strings.Split(classList, " ")
+
+			// sort
+			sort.Strings(classes)
+			log.Println("File:", file, "Classes:", classes)
 		}
 	}
 }
