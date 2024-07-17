@@ -1,0 +1,42 @@
+name: publish
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+      with:
+        fetch-depth: 1
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.22.5
+    - name: Make all
+      run: make all
+    - name: Upload release binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: release-binaries
+        path: ./bin/
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./bin/
+        asset_name: release-it
+        asset_content_type: application/zip
