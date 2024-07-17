@@ -11,16 +11,24 @@ import (
 )
 
 type Flags struct {
-	dev bool
+	dev  bool
+	file string
+	dir  string
 }
 
 func main() {
 	// flag "--dev" to run the script in dev mode
 	dev := flag.Bool("dev", false, "Run the script in dev mode")
+	// flag "--file" to specify the file to sort
+	file := flag.String("file", "", "Specify the file to sort")
+	// flag "--dir" to specify the directory to sort
+	dir := flag.String("dir", "./templates", "Specify the directory to sort")
 	flag.Parse()
 
 	templCSSSort(Flags{
-		dev: *dev,
+		dev:  *dev,
+		file: *file,
+		dir:  *dir,
 	})
 }
 
@@ -32,7 +40,15 @@ func assert(condition bool, msg string) {
 
 func templCSSSort(flags Flags) {
 	// find all .templ files in directory and subdirectories
-	files, err := filepath.Glob("./templates/*.templ")
+	var files []string
+	var err error
+	if flags.file == "" {
+		files, err = filepath.Glob("./templates/*.templ")
+	} else if flags.dir != "" {
+		files, err = filepath.Glob(flags.dir + "/*.templ")
+	} else {
+		files = []string{flags.file}
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
