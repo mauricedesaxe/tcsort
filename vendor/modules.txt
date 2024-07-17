@@ -1,0 +1,2 @@
+# github.com/a-h/templ v0.2.747
+## explicit; go 1.21
