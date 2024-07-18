@@ -22,7 +22,7 @@ func main() {
 	// flag "--file" to specify the file to sort
 	file := flag.String("file", "", "Specify the file to sort")
 	// flag "--dir" to specify the directory to sort
-	dir := flag.String("dir", "./templates", "Specify the directory to sort")
+	dir := flag.String("dir", "", "Specify the directory to sort")
 	flag.Parse()
 
 	templCSSSort(Flags{
