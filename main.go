@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Flags struct {
@@ -39,6 +40,8 @@ func assert(condition bool, msg string) {
 }
 
 func templCSSSort(flags Flags) {
+	start := time.Now()
+
 	// find all .templ files in directory and subdirectories
 	var files []string
 	var err error
@@ -137,6 +140,8 @@ func templCSSSort(flags Flags) {
 			log.Fatal(err)
 		}
 	}
+
+	log.Println("Done in", time.Since(start))
 }
 
 func removeDuplicates(slice []string) []string {
