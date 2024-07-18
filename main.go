@@ -42,16 +42,40 @@ func templCSSSort(flags Flags) {
 	// find all .templ files in directory and subdirectories
 	var files []string
 	var err error
-	if flags.file == "" {
-		files, err = filepath.Glob("./templates/*.templ")
+	if flags.file != "" {
+		// If the file flag is specified, only take in that file
+		if !strings.HasSuffix(flags.file, ".templ") {
+			log.Fatal("File must have .templ extension")
+		}
+		files = append(files, flags.file)
 	} else if flags.dir != "" {
-		files, err = filepath.Glob(flags.dir + "/*.templ")
+		// If the dir flag is specified, take in that dir and its subdirectories
+		err = filepath.Walk(flags.dir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() && strings.HasSuffix(info.Name(), ".templ") {
+				files = append(files, path)
+			}
+			return nil
+		})
 	} else {
-		files = []string{flags.file}
+		// If neither flag is specified, go through cwd and all subdirectories for any .templ file
+		err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() && strings.HasSuffix(info.Name(), ".templ") {
+				files = append(files, path)
+			}
+			return nil
+		})
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println("Found", len(files), "files")
 
 	// parse each file
 	for _, file := range files {
