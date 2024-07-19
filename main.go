@@ -91,57 +91,58 @@ func templCSSSort(flags Flags) {
 		originalContent := string(content)
 		assert(originalContent != "", "File is empty")
 
-		// find all classes in templ file
-		re := regexp.MustCompile(`class="([^"]+)"`)
-		matches := re.FindAllStringSubmatch(originalContent, -1)
-		assert(len(matches) > 0, "No classes found")
-
-		for _, match := range matches {
-			classList := match[1]
-			assert(classList != "", "Class list is empty")
-
-			// trim in place
-			classList = strings.TrimSpace(classList)
-			assert(classList != "", "Class list is empty")
-
-			// any whitespace bigger then 1 char, reduce to 1 char
-			for strings.Contains(classList, "  ") {
-				classList = strings.ReplaceAll(classList, "  ", " ")
-			}
-			assert(classList != "", "Class list is empty")
-
-			// split
-			classes := strings.Split(classList, " ")
-			assert(len(classes) > 0, "No classes found")
-
-			// sort
-			sort.Strings(classes)
-
-			// remove duplicates
-			classes = removeDuplicates(classes)
-
-			// create new class list string
-			newClassList := strings.Join(classes, " ")
-			assert(newClassList != "", "New class list is empty")
-
-			// log diff
-			if flags.dev {
-				logDiff(file, classList, newClassList)
-			}
-
-			// replace class list in file
-			originalContent = strings.Replace(originalContent, match[0], "class=\""+newClassList+"\"", -1)
-			assert(originalContent != "", "New content is empty")
-		}
+		newContent := processContent(originalContent)
 
 		// write the modified content back to the file
-		err = os.WriteFile(file, []byte(originalContent), 0644)
+		err = os.WriteFile(file, []byte(newContent), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
 	log.Println("Done in", time.Since(start))
+}
+
+func processContent(content string) string {
+	// find all classes in content
+	re := regexp.MustCompile(`class="([^"]+)"`)
+	matches := re.FindAllStringSubmatch(content, -1)
+	assert(len(matches) > 0, "No classes found")
+
+	for _, match := range matches {
+		classList := match[1]
+		assert(classList != "", "Class list is empty")
+
+		// trim in place
+		classList = strings.TrimSpace(classList)
+		assert(classList != "", "Class list is empty")
+
+		// any whitespace bigger then 1 char, reduce to 1 char
+		for strings.Contains(classList, "  ") {
+			classList = strings.ReplaceAll(classList, "  ", " ")
+		}
+		assert(classList != "", "Class list is empty")
+
+		// split
+		classes := strings.Split(classList, " ")
+		assert(len(classes) > 0, "No classes found")
+
+		// sort
+		sort.Strings(classes)
+
+		// remove duplicates
+		classes = removeDuplicates(classes)
+
+		// create new class list string
+		newClassList := strings.Join(classes, " ")
+		assert(newClassList != "", "New class list is empty")
+
+		// replace class list in file
+		content = strings.Replace(content, match[0], "class=\""+newClassList+"\"", -1)
+		assert(content != "", "New content is empty")
+	}
+
+	return content
 }
 
 func removeDuplicates(slice []string) []string {
@@ -155,17 +156,4 @@ func removeDuplicates(slice []string) []string {
 	}
 	assert(len(list) > 0, "No classes found")
 	return list
-}
-
-func logDiff(file, oldClassList, newClassList string) {
-	const (
-		red   = "\033[31m"
-		green = "\033[32m"
-		reset = "\033[0m"
-	)
-
-	log.Println("===")
-	log.Println("File:", file)
-	log.Println("Old:", red, oldClassList, reset)
-	log.Println("New:", green, newClassList, reset)
 }
