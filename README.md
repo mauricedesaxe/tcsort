@@ -96,6 +96,54 @@ Now you can use the tool from anywhere on your system:
 tcsort --dir path/to/your/templates/folder/
 ```
 
+## Run on Save
+
+### VS Code
+
+1. install tcsort and make sure it's available globally
+2. install emeraldwalk.runonsave extension from VS Code marketplace
+3. Configure it to run `tcsort` on the saved file
+
+```json
+{
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+            "match": "\\.templ$",
+            "cmd": "tcsort --file ${file}"
+            }
+        ]
+    }
+}
+```
+
+### Nvim with --file
+
+1. install tcsort and make sure it's available globally
+2. install emeraldwalk.runonsave extension from VS Code marketplace
+3. Configure it to run `tcsort` on the saved file
+
+Either in `init.vim`:
+
+```
+augroup tcsort
+  autocmd!
+  autocmd BufWritePre *.templ :silent! execute '!tcsort --file %'
+augroup END
+```
+
+Or in `init.lua`:
+
+vim.api.nvim_exec([[
+  augroup tcsort
+    autocmd!
+    autocmd BufWritePre *.templ :silent! execute '!tcsort --file %'
+  augroup END
+]], false)
+
+You should also be able to configure it with input from stdin and output to stdout using the `--stdin` flag,
+but I'm too much of a nvim noob to figure out how to configure it.
+
 ## Contributing
 
 Feel free to open issues or submit pull requests if you find any bugs or have suggestions for improvements.
