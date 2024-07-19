@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"testing"
@@ -192,4 +193,35 @@ func TestTemplCSSSort(t *testing.T) {
 	})
 	end := time.Now()
 	fmt.Println("Time taken:", end.Sub(start))
+}
+
+func TestStdinToStdout(t *testing.T) {
+	// Simulate stdin input
+	input := "class=\"b a c\""
+	r, w, _ := os.Pipe()
+	w.Write([]byte(input))
+	w.Close()
+	oldStdin := os.Stdin
+	os.Stdin = r
+	defer func() { os.Stdin = oldStdin }()
+
+	// Capture stdout
+	oldStdout := os.Stdout
+	rOut, wOut, _ := os.Pipe()
+	os.Stdout = wOut
+	defer func() { os.Stdout = oldStdout }()
+
+	// Run the function
+	templCSSSort(Flags{stdin: true})
+
+	// Close the writer and read the output
+	wOut.Close()
+	var buf bytes.Buffer
+	buf.ReadFrom(rOut)
+
+	// Check the output
+	expectedOutput := "class=\"a b c\"\n"
+	if buf.String() != expectedOutput {
+		t.Errorf("expected %q, got %q", expectedOutput, buf.String())
+	}
 }

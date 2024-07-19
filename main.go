@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,9 +15,10 @@ import (
 )
 
 type Flags struct {
-	dev  bool
-	file string
-	dir  string
+	dev   bool
+	file  string
+	dir   string
+	stdin bool
 }
 
 func main() {
@@ -25,12 +28,15 @@ func main() {
 	file := flag.String("file", "", "Specify the file to sort")
 	// flag "--dir" to specify the directory to sort
 	dir := flag.String("dir", "", "Specify the directory to sort")
+	// flag "--stdin" to read from stdin
+	stdin := flag.Bool("stdin", false, "Read from stdin")
 	flag.Parse()
 
 	templCSSSort(Flags{
-		dev:  *dev,
-		file: *file,
-		dir:  *dir,
+		dev:   *dev,
+		file:  *file,
+		dir:   *dir,
+		stdin: *stdin,
 	})
 }
 
@@ -42,6 +48,21 @@ func assert(condition bool, msg string) {
 
 func templCSSSort(flags Flags) {
 	start := time.Now()
+
+	// if stdin flag is set, read from stdin and write to stdout
+	if flags.stdin {
+		scanner := bufio.NewScanner(os.Stdin)
+		buf := make([]byte, 0, 64*1024) // 64KB buffer
+		scanner.Buffer(buf, 64*1024)
+		scanner.Scan()
+		content := scanner.Text()
+		newContent, err := processContent(content)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(newContent)
+		return
+	}
 
 	// find all .templ files in directory and subdirectories
 	var files []string
