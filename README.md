@@ -134,12 +134,14 @@ augroup END
 
 Or in `init.lua`:
 
+```lua
 vim.api.nvim_exec([[
   augroup tcsort
     autocmd!
     autocmd BufWritePre *.templ :silent! execute '!tcsort --file %'
   augroup END
 ]], false)
+```
 
 You should also be able to configure it with input from stdin and output to stdout using the `--stdin` flag,
 but I'm too much of a nvim noob to figure out how to configure it.
