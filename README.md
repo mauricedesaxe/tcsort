@@ -63,7 +63,7 @@ After building the binary, you can use it to sort your CSS files. For example:
 ./bin/templ-css-sort-amd64 --file path/to/your/templates/folder/pages.templ
 
 # sort from stdin
-echo 'class="b a c"' | ./bin/templ-css-sort-darwin --stdin
+echo 'class="b a c"' | ./bin/templ-css-sort-amd64 --stdin
 ```
 
 Replace `templ-css-sort-amd64` with the appropriate binary for your operating system.
