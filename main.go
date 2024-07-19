@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"log"
 	"os"
@@ -85,13 +86,21 @@ func templCSSSort(flags Flags) {
 		// read file
 		content, err := os.ReadFile(file)
 		if err != nil {
-			log.Fatal(err)
+			log.Println("couldn't read file: ", file)
+			continue
+		}
+		if len(content) == 0 {
+			log.Println("file empty: ", file)
+			continue
 		}
 
-		originalContent := string(content)
-		assert(originalContent != "", "File is empty")
-
-		newContent := processContent(originalContent)
+		newContent, err := processContent(string(content))
+		if err != nil {
+			if err.Error() == "no_classes_found" {
+				continue
+			}
+			log.Fatal(err)
+		}
 
 		// write the modified content back to the file
 		err = os.WriteFile(file, []byte(newContent), 0644)
@@ -103,29 +112,39 @@ func templCSSSort(flags Flags) {
 	log.Println("Done in", time.Since(start))
 }
 
-func processContent(content string) string {
+func processContent(content string) (string, error) {
 	// find all classes in content
 	re := regexp.MustCompile(`class="([^"]+)"`)
 	matches := re.FindAllStringSubmatch(content, -1)
-	assert(len(matches) > 0, "No classes found")
+	if len(matches) == 0 {
+		return "", errors.New("no_classes_found")
+	}
 
 	for _, match := range matches {
 		classList := match[1]
-		assert(classList != "", "Class list is empty")
+		if classList == "" {
+			continue
+		}
 
 		// trim in place
 		classList = strings.TrimSpace(classList)
-		assert(classList != "", "Class list is empty")
+		if classList == "" {
+			continue
+		}
 
 		// any whitespace bigger then 1 char, reduce to 1 char
 		for strings.Contains(classList, "  ") {
 			classList = strings.ReplaceAll(classList, "  ", " ")
 		}
-		assert(classList != "", "Class list is empty")
+		if classList == "" {
+			continue
+		}
 
 		// split
 		classes := strings.Split(classList, " ")
-		assert(len(classes) > 0, "No classes found")
+		if len(classes) == 0 {
+			continue
+		}
 
 		// sort
 		sort.Strings(classes)
@@ -135,14 +154,18 @@ func processContent(content string) string {
 
 		// create new class list string
 		newClassList := strings.Join(classes, " ")
-		assert(newClassList != "", "New class list is empty")
+		if newClassList == "" {
+			continue
+		}
 
 		// replace class list in file
 		content = strings.Replace(content, match[0], "class=\""+newClassList+"\"", -1)
-		assert(content != "", "New content is empty")
+		if content == "" {
+			continue
+		}
 	}
 
-	return content
+	return content, nil
 }
 
 func removeDuplicates(slice []string) []string {
