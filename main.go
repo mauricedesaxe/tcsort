@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -51,12 +51,11 @@ func templCSSSort(flags Flags) {
 
 	// if stdin flag is set, read from stdin and write to stdout
 	if flags.stdin {
-		scanner := bufio.NewScanner(os.Stdin)
-		buf := make([]byte, 0, 64*1024) // 64KB buffer
-		scanner.Buffer(buf, 64*1024)
-		scanner.Scan()
-		content := scanner.Text()
-		newContent, err := processContent(content)
+		content, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			log.Fatal(err)
+		}
+		newContent, err := processContent(string(content))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -181,7 +180,7 @@ func processContent(content string) (string, error) {
 		}
 
 		// replace class list in file
-		content = strings.Replace(content, match[0], "class=\""+newClassList+"\"", -1)
+		content = strings.Replace(content, match[0], `class="`+newClassList+`"`, -1)
 		if content == "" {
 			continue
 		}
