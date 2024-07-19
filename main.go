@@ -40,12 +40,6 @@ func main() {
 	})
 }
 
-func assert(condition bool, msg string) {
-	if !condition {
-		log.Fatal(msg)
-	}
-}
-
 // The main function that runs the templCSSSort.
 // Takes in flags to determine what to sort and where to sort it.
 // If no flags are set, it will sort all .templ files in the current directory and its subdirectories.
@@ -206,6 +200,5 @@ func removeDuplicates(slice []string) []string {
 			list = append(list, entry)
 		}
 	}
-	assert(len(list) > 0, "No classes found")
 	return list
 }
