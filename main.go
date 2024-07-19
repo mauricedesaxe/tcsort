@@ -46,6 +46,12 @@ func assert(condition bool, msg string) {
 	}
 }
 
+// The main function that runs the templCSSSort.
+// Takes in flags to determine what to sort and where to sort it.
+// If no flags are set, it will sort all .templ files in the current directory and its subdirectories.
+// With the --stdin flag, it will read from stdin and write to stdout.
+// With the --file flag, it will only sort the specified file.
+// With the --dir flag, it will only sort the specified directory and its subdirectories.
 func templCSSSort(flags Flags) {
 	start := time.Now()
 
@@ -133,6 +139,7 @@ func templCSSSort(flags Flags) {
 	log.Println("Done in", time.Since(start))
 }
 
+// Takes a string of content and returns a string of content with the classes sorted
 func processContent(content string) (string, error) {
 	// find all classes in content
 	re := regexp.MustCompile(`class="([^"]+)"`)
@@ -189,6 +196,7 @@ func processContent(content string) (string, error) {
 	return content, nil
 }
 
+// Takes a slice of strings and returns a slice of strings with duplicates removed
 func removeDuplicates(slice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
