@@ -143,8 +143,21 @@ vim.api.nvim_exec([[
 ]], false)
 ```
 
-You should also be able to configure it with input from stdin and output to stdout using the `--stdin` flag,
-but I'm too much of a nvim noob to figure out how to configure it.
+### Nvim with --stdin
+
+You can also use stdin/stdout mode for nvim. This is an example of `init.lua`.
+
+```lua
+-- Create an augroup for tcsort
+local tcsort_group = vim.api.nvim_create_augroup("tcsort", { clear = true })
+
+-- Create an autocmd for BufWritePre event
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = tcsort_group,
+  pattern = "*.templ",
+  command = "silent! %!tcsort --stdin",
+})
+```
 
 ## Contributing
 
