@@ -153,7 +153,7 @@ func processContent(content string) (string, error) {
 			continue
 		}
 
-		// any whitespace bigger then 1 char, reduce to 1 char
+		// any whitespace bigger than 1 char, reduce to 1 char
 		for strings.Contains(classList, "  ") {
 			classList = strings.ReplaceAll(classList, "  ", " ")
 		}
